@@ -3,6 +3,8 @@ package com.redis_app.service;
 import com.redis_app.controller.v1.request.CreateProductRequest;
 import com.redis_app.controller.v1.request.UpdateProductRequest;
 import com.redis_app.model.dto.ProductDto;
+import com.redis_app.model.entity.Product;
+import com.redis_app.repository.ProductRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,9 +16,16 @@ import org.springframework.stereotype.Service;
 public class ProductService {
 
     private final ProductCacheService productCacheService;
+    private final ProductRepository productRepository;
 
     public Long createProduct(final CreateProductRequest request) {
-        return productCacheService.createProduct(request);
+        return productRepository.save(
+            Product.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .price(request.getPrice())
+                .count(request.getCount())
+                .build()).getId();
     }
 
     public ProductDto getProductById(final Long productId) {

@@ -25,16 +25,6 @@ public class ProductCacheService {
 
     private final ProductRepository productRepository;
 
-    public Long createProduct(final CreateProductRequest request) {
-        return productRepository.save(
-            Product.builder()
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .price(request.getPrice())
-                .count(request.getCount())
-                .build()).getId();
-    }
-
     @Cacheable(value = PRODUCT_CACHE, key = "#productId", unless = "#result == null")
     public ProductDto getProductById(final Long productId) {
         return productRepository.findById(productId).map(Product::toProductDto)
