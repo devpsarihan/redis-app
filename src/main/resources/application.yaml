@@ -1,0 +1,39 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: redis-app
+  jpa:
+    defer-datasource-initialization: false
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: false
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: update
+  datasource:
+    url: ${POSTGRESQL_DB_URL:jdbc:postgresql://localhost:5432/PRODUCT}
+    username: ${POSTGRES_USER:root}
+    password: ${POSTGRES_PASSWORD:password}
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    clean-on-validation-error: true
+    validate-on-migrate: true
+  data:
+    redis:
+      url: ${REDIS_DB_URL:redis://localhost:6379}
+      connect-timeout: ${REDIS_TIMEOUT:6000}
+      database: ${REDIS_DB:0}
+      password: ${REDIS_PASSWORD:password}
+
+springdoc:
+  swagger-ui:
+    path: /doc
+logging:
+  level:
+    org.flywaydb: debug
+    root: info
+

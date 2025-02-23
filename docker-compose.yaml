@@ -1,0 +1,55 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: 'postgres:16'
+    container_name: 'product-postgresql'
+    environment:
+      - 'POSTGRES_DB=PRODUCT'
+      - 'POSTGRES_PASSWORD=password'
+      - 'POSTGRES_USER=root'
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - redis-app-network
+  redis:
+    image: 'redis:latest'
+    restart: always
+    container_name: 'product-redis'
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    command: redis-server --save 20 1 --loglevel warning --requirepass password --timeout 60
+    networks:
+      - redis-app-network
+  redis-app:
+    image: redis-app-image:latest
+    container_name: redis-app
+    build: ../../Desktop/redis_projects/redis-app
+    restart: on-failure
+    ports:
+      - 8080:8080
+    environment:
+      - 'POSTGRESQL_DB_URL=jdbc:postgresql://postgres:5432/PRODUCT'
+      - 'REDIS_DB=1'
+      - 'REDIS_PASSWORD=password'
+      - 'REDIS_TIMEOUT=6000'
+      - 'REDIS_DB_URL=redis://redis:6379'
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - redis-app-network
+
+volumes:
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
+
+networks:
+  redis-app-network:
+    driver: bridge
