@@ -28,7 +28,6 @@ services:
   redis-app:
     image: redis-app-image:latest
     container_name: redis-app
-    build: ../../Desktop/redis_projects/redis-app
     restart: on-failure
     ports:
       - 8080:8080
